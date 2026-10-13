@@ -53,6 +53,7 @@ public class UserController {
             return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #id")
     @GetMapping(value = "/users/{id}")
     public ResponseEntity<Object> getUser(@PathVariable Long id) throws UserNotFoundException, OrderNotFoundException{
 
@@ -79,7 +80,7 @@ public class UserController {
         }
     }
     // TODO - deleteUser (@Mappings, URI, and method)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #id")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         try {
@@ -90,6 +91,7 @@ public class UserController {
         }
     }
     // TODO - getUserOrders (@Mappings, URI=/users/{id}/orders, and method)
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #id")
     @GetMapping("/users/{id}/orders")
     public ResponseEntity<Set<Order>> getUserOrders(@PathVariable Long id) {
         try {
@@ -99,6 +101,7 @@ public class UserController {
         }
     }
     // TODO - getUserOrder (@Mappings, URI=/users/{uid}/orders/{oid}, and method)
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #uid")
     @GetMapping("/users/{uid}/orders/{oid}")
     public ResponseEntity<Order> getUserOrder(@PathVariable Long uid, @PathVariable Long oid) {
         try {
@@ -108,6 +111,7 @@ public class UserController {
         }
     }
     // TODO - deleteUserOrder (@Mappings, URI, and method)
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #uid")
     @DeleteMapping("/users/{uid}/orders/{oid}")
     public ResponseEntity<Order> deleteUserOrder(@PathVariable Long uid, @PathVariable Long oid) {
         try {
@@ -118,6 +122,7 @@ public class UserController {
         }
     }
     // TODO - createUserOrder (@Mappings, URI, and method) + HATEOAS links
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') and authentication.details.userid == #id")
     @PostMapping("users/{id}/orders")
     public ResponseEntity<Set<Order>> createUserOrder(@PathVariable Long id, @RequestBody Order order) {
         try {

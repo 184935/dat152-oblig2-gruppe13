@@ -52,6 +52,7 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/books/{isbn}")
     public ResponseEntity<Object> getBook(@PathVariable String isbn) throws BookNotFoundException{
 
@@ -71,6 +72,7 @@ public class BookController {
     }
 
     // TODO - getAuthorsOfBookByISBN (@Mappings, URI, and method)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/books/{isbn}/authors")
     public ResponseEntity<Set<Author>> getAuthorsOfBookByISBN(@PathVariable String isbn) throws BookNotFoundException {
 

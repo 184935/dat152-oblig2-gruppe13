@@ -61,7 +61,7 @@ public class OrderController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
     // TODO - getBorrowOrder (@Mappings, URI=/orders/{id}, and method)
-
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/orders/{id}")
     public ResponseEntity<Order> getBorrowOrder(@PathVariable Long id)  {
         try {
