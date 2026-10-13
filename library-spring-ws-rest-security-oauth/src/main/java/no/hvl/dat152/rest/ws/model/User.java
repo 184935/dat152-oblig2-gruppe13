@@ -116,6 +116,20 @@ public class User extends RepresentationModel<User> {
 		return orders;
 	}
 
+	public Order getOrder(Long oid) {
+		for (Order o : orders) {
+			if(o.getId().equals(oid)) {
+				return o;
+			}
+		}
+		return null;
+	}
+
+	public void removeOrder(Long oid) {
+		orders.removeIf(o -> o.getId().equals(oid));
+	}
+
+
 	/**
 	 * @param orders the orders to set
 	 */

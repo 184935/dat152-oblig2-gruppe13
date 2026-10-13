@@ -30,8 +30,45 @@ public class OrderService {
 
 	@Autowired
 	private OrderRepository orderRepository;
-	
-	// TODO copy your solutions from previous tasks!
+
+	public Order saveOrder(Order order) {
+
+		order = orderRepository.save(order);
+
+		return order;
+	}
+
+	public Order findOrder(Long id) throws OrderNotFoundException {
+
+		Order order = orderRepository.findById(id)
+				.orElseThrow(()-> new OrderNotFoundException("Order with id: "+id+" not found in the order list!"));
+
+		return order;
+	}
+
+	// TODO public void deleteOrder(Long id)
+	public void deleteOrder(Long id) throws OrderNotFoundException{
+		if (!orderRepository.existsById(id)) {
+			throw new OrderNotFoundException("Order with id: "+id+" not found in the order list!");
+		}
+		orderRepository.deleteById(id);
+	}
+	// TODO public List<Order> findAllOrders()
+	public List<Order> findAllOrders() {
+		return (List<Order>) orderRepository.findAll();
+	}
+	// TODO public List<Order> findByExpiryDate(LocalDate expiry, Pageable page)
+	public List<Order> findByExpiryDate(LocalDate expiry, Pageable page) {
+		return orderRepository.findOrderByExpiry(expiry, page.getPageSize(), (int) page.getOffset());
+	}
+	// TODO public Order updateOrder(Order order, Long id)
+	public Order updateOrder(Order order, Long id) throws OrderNotFoundException{
+		if (!orderRepository.existsById(id)) {
+			throw new OrderNotFoundException("Order with id: "+id+" not found in the order list!");
+		}
+		order.setId(id);
+		return orderRepository.save(order);
+	}
 	
 
 }

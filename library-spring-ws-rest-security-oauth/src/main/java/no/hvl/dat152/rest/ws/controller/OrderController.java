@@ -39,6 +39,63 @@ import no.hvl.dat152.rest.ws.service.OrderService;
 @RequestMapping("/elibrary/api/v1")
 public class OrderController {
 
-	// TODO authority annotation
+    @Autowired
+    private OrderService orderService;
+
+    // TODO - getAllBorrowOrders (@Mappings, URI=/orders, and method) + filter by expiry and paginate
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/orders")
+    public ResponseEntity<List<Order>> getAllBorrowOrders(@RequestParam(required = false) LocalDate expiry, Pageable page) {
+
+        List<Order> orders;
+        if (expiry == null || page == null) {
+            orders = orderService.findAllOrders();
+        } else {
+            orders = orderService.findByExpiryDate(expiry, page);
+        }
+        for (Order o : orders) {
+            o.add(linkTo(methodOn(OrderController.class).getBorrowOrder(o.getId())).withSelfRel());
+            o.add(linkTo(methodOn(OrderController.class).deleteBookOrder(o.getId())).withSelfRel());
+            o.add(linkTo(methodOn(OrderController.class).updateOrder(o.getId(), o)).withSelfRel());
+        }
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+    // TODO - getBorrowOrder (@Mappings, URI=/orders/{id}, and method)
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<Order> getBorrowOrder(@PathVariable Long id)  {
+        try {
+            Order order = orderService.findOrder(id);
+            order.add(linkTo(methodOn(OrderController.class).getBorrowOrder(order.getId())).withSelfRel());
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (OrderNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    // TODO - updateOrder (@Mappings, URI=/orders/{id}, and method)
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/orders/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
+        try {
+            Order order1 = orderService.updateOrder(order, id);
+            return new ResponseEntity<>(order1, HttpStatus.OK);
+        } catch (OrderNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    // TODO - deleteBookOrder (@Mappings, URI=/orders/{id}, and method)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity<Order> deleteBookOrder(@PathVariable Long id)  {
+
+        try {
+            orderService.deleteOrder(id);
+            return new ResponseEntity<>(HttpStatus.OK );
+        } catch (OrderNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+    }
 	
 }
